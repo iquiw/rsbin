@@ -1,0 +1,9 @@
+[[scripts]]
+name = "foo"
+path = "/path/to/foo.rs"
+build-type = "rustc"
+
+[[scripts]]
+name = "bar"
+path = "/path/to/bar.rs"
+build-type = "Rustc"

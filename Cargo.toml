@@ -1,0 +1,18 @@
+[package]
+name = "rsbin"
+version = "0.1.0"
+authors = ["Iku Iwasa <iku.iwasa@gmail.com>"]
+build = "build.rs"
+
+[build-dependencies]
+serde_codegen = "*"
+
+[dependencies]
+error-chain = "*"
+rust-crypto = "*"
+serde = "*"
+
+[dependencies.toml]
+version = "*"
+default-features = false
+features = [ "serde" ]
