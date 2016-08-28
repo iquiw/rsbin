@@ -13,12 +13,10 @@ use rsbin::util::err;
 
 #[derive(Debug, Deserialize)]
 pub enum RsbinBuildType {
-    #[serde(rename="rustc")]
-    Rustc,
-    #[serde(rename="cargo")]
-    Cargo,
-    #[serde(rename="stack")]
-    Stack,
+    #[serde(rename="rustc")] Rustc,
+    #[serde(rename="cargo")] Cargo,
+    #[serde(rename="ghc")]   Ghc,
+    #[serde(rename="stack")] Stack,
 }
 
 #[derive(Debug, Deserialize)]
@@ -28,7 +26,7 @@ pub struct RsbinScript {
     #[serde(rename="build-type", deserialize_with="deserialize_build_type")]
     pub build_type: RsbinBuildType,
     #[serde(rename="build-opts")]
-    build_opts: Vec<String>,
+    pub build_opts: Vec<String>,
     #[serde(rename="build-deps")]
     build_deps: Vec<String>,
 }
