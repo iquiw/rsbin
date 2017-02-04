@@ -2,7 +2,7 @@ use std::ffi::OsStr;
 use std::path::Path;
 use std::process::Command;
 
-use rsbin::errors::{ChainErr, Result};
+use rsbin::errors::{Result, ResultExt};
 use rsbin::os::RsbinEnv;
 use rsbin::config::{RsbinBuildType, RsbinScript};
 use rsbin::util::{create_dir_if_missing, err};

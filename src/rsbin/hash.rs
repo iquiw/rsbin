@@ -8,7 +8,7 @@ use crypto::sha1::Sha1;
 
 use rsbin::os::RsbinEnv;
 use rsbin::config::RsbinScript;
-use rsbin::errors::{ChainErr, Result};
+use rsbin::errors::{Result, ResultExt};
 
 impl RsbinScript {
     pub fn get_hash(&self) -> Result<String> {

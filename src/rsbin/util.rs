@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::Path;
 
-use rsbin::errors::{ChainErr, Error, Result};
+use rsbin::errors::{Error, Result, ResultExt};
 
 pub fn err<T, S: Into<Error>>(msg: S) -> Result<T> {
     Err(msg.into())
