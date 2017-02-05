@@ -31,7 +31,11 @@ commands:
 
 
 pub fn list(cfg: &RsbinConfig, args: &mut Args) -> Result<()> {
-    let long = if let Some(ref s) = args.next() { s == "-l" } else { false };
+    let long = if let Some(ref s) = args.next() {
+        s == "-l"
+    } else {
+        false
+    };
     println!("Available scripts:");
     for scr in &cfg.scripts {
         if long {
@@ -45,15 +49,17 @@ pub fn list(cfg: &RsbinConfig, args: &mut Args) -> Result<()> {
 
 pub fn run(env: &RsbinEnv, cfg: &RsbinConfig, args: &mut Args) -> Result<()> {
     match args.next() {
-        Some(name) => match lookup_script(cfg, &name) {
-            Some(scr) => {
-                let scr_args: Vec<_> = args.collect();
-                try!(update_script(env, scr, false));
-                scr.execute(env, &scr_args)
-            },
-            None => err("script not found")
-        },
-        None => err("run needs script name")
+        Some(name) => {
+            match lookup_script(cfg, &name) {
+                Some(scr) => {
+                    let scr_args: Vec<_> = args.collect();
+                    try!(update_script(env, scr, false));
+                    scr.execute(env, &scr_args)
+                }
+                None => err("script not found"),
+            }
+        }
+        None => err("run needs script name"),
     }
 }
 
@@ -74,7 +80,7 @@ pub fn update(env: &RsbinEnv, cfg: &RsbinConfig, args: &mut Args) -> Result<()> 
         for name in args {
             let res = match lookup_script(cfg, &name) {
                 Some(scr) => try!(update_script(env, scr, force)),
-                None => RsbinUpdateResult::NotFound
+                None => RsbinUpdateResult::NotFound,
             };
             println!("{:12} {}", res, name);
         }
@@ -82,12 +88,16 @@ pub fn update(env: &RsbinEnv, cfg: &RsbinConfig, args: &mut Args) -> Result<()> 
     Ok(())
 }
 
-enum RsbinUpdateResult { Latest, Compiled, NotFound }
+enum RsbinUpdateResult {
+    Latest,
+    Compiled,
+    NotFound,
+}
 
 impl fmt::Display for RsbinUpdateResult {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            RsbinUpdateResult::Latest   => f.pad("[LATEST]"),
+            RsbinUpdateResult::Latest => f.pad("[LATEST]"),
             RsbinUpdateResult::Compiled => f.pad("[COMPILED]"),
             RsbinUpdateResult::NotFound => f.pad("[NOT FOUND]"),
         }
@@ -96,7 +106,7 @@ impl fmt::Display for RsbinUpdateResult {
 
 fn update_script(env: &RsbinEnv, scr: &RsbinScript, force: bool) -> Result<RsbinUpdateResult> {
     let hash = try!(scr.get_hash());
-    if force || !try!(scr.is_hash_same(env, &hash)) || !scr.does_bin_exist(env)  {
+    if force || !try!(scr.is_hash_same(env, &hash)) || !scr.does_bin_exist(env) {
         try!(scr.compile(env));
         try!(scr.write_hash(env, &hash));
         Ok(RsbinUpdateResult::Compiled)
@@ -108,7 +118,7 @@ fn update_script(env: &RsbinEnv, scr: &RsbinScript, force: bool) -> Result<Rsbin
 fn lookup_script<'a>(cfg: &'a RsbinConfig, name: &str) -> Option<&'a RsbinScript> {
     for scr in &cfg.scripts {
         if scr.name == name {
-            return Some(scr)
+            return Some(scr);
         }
     }
     None

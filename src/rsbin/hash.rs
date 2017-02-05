@@ -13,15 +13,15 @@ use rsbin::errors::{Result, ResultExt};
 impl RsbinScript {
     pub fn get_hash(&self) -> Result<String> {
         Ok(try!(hash_file(&self.path)
-                .chain_err(|| format!("Unable to calculate hash of {}", &self.path))))
+            .chain_err(|| format!("Unable to calculate hash of {}", &self.path))))
     }
 
     pub fn write_hash(&self, env: &RsbinEnv, hash: &str) -> Result<()> {
         let path = env.hash_path(self);
         let mut f = try!(File::create(&path)
-                         .chain_err(|| format!("Unable to create {}", path.display())));
+            .chain_err(|| format!("Unable to create {}", path.display())));
         try!(f.write_fmt(format_args!("{}", hash))
-             .chain_err(|| "Unable to write hash"));
+            .chain_err(|| "Unable to write hash"));
         Ok(())
     }
 
@@ -30,7 +30,7 @@ impl RsbinScript {
         if let Ok(mut f) = File::open(path) {
             let mut s = String::new();
             try!(f.read_to_string(&mut s)
-                 .chain_err(|| "Unable to read hash"));
+                .chain_err(|| "Unable to read hash"));
             Ok(s == hash)
         } else {
             Ok(false)

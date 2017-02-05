@@ -7,14 +7,14 @@ use rsbin::errors::Result;
 
 pub struct RsbinEnv {
     appdir: PathBuf,
-    tmpdir: PathBuf
+    tmpdir: PathBuf,
 }
 
 impl RsbinEnv {
     pub fn new() -> RsbinEnv {
         RsbinEnv {
             appdir: appdir(),
-            tmpdir: tmpdir()
+            tmpdir: tmpdir(),
         }
     }
 
@@ -80,8 +80,7 @@ fn tmpdir() -> PathBuf {
 }
 #[cfg(unix)]
 #[allow(unused_variables)]
-fn exe(path: &mut PathBuf) {
-}
+fn exe(path: &mut PathBuf) {}
 #[cfg(windows)]
 fn appdir() -> PathBuf {
     let appdata = env::var("APPDATA").expect("APPDATA is set");
