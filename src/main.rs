@@ -3,6 +3,8 @@
 extern crate error_chain;
 extern crate crypto;
 extern crate serde;
+#[macro_use]
+extern crate serde_derive;
 extern crate toml;
 
 mod rsbin;
