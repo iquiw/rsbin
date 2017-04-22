@@ -4,8 +4,7 @@ use std::path::Path;
 use std::result;
 
 use serde::de::Error as SerdeError;
-use serde::de::{Deserialize, Deserializer};
-use serde::de::value::ValueDeserializer;
+use serde::de::{Deserialize, Deserializer, IntoDeserializer};
 use toml;
 
 use rsbin::errors::*;
@@ -30,7 +29,7 @@ pub struct RsbinScript {
     build_deps: Vec<String>,
 }
 
-fn deserialize_build_type<D>(d: D) -> result::Result<RsbinBuildType, D::Error> where D: Deserializer {
+fn deserialize_build_type<'de, D>(d: D) -> result::Result<RsbinBuildType, D::Error> where D: Deserializer<'de> {
     let toml: toml::Value = try!(Deserialize::deserialize(d));
     match toml {
         toml::Value::String(s) => {
