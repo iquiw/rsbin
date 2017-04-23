@@ -9,7 +9,7 @@ use toml;
 
 use rsbin::errors::*;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, PartialEq)]
 pub enum RsbinBuildType {
     #[serde(rename="rustc")] Rustc,
     #[serde(rename="cargo")] Cargo,
@@ -17,7 +17,7 @@ pub enum RsbinBuildType {
     #[serde(rename="stack")] Stack,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, PartialEq)]
 pub struct RsbinScript {
     pub name: String,
     pub path: String,
@@ -45,7 +45,6 @@ pub struct RsbinConfig {
     pub scripts: Vec<RsbinScript>
 }
 
-
 impl RsbinConfig {
     pub fn load<P>(path: P) -> Result<RsbinConfig> where P: AsRef<Path> {
         let mut f = try!(File::open(&path)
@@ -55,4 +54,21 @@ impl RsbinConfig {
 
         toml::from_str(&s).chain_err(|| "Invalid TOML format")
     }
+}
+
+#[test]
+fn test_script_from_str() {
+    let s = r#"
+name = "foo"
+path = "/bar/foo.rs"
+build-type = "rustc"
+"#;
+    let rs_exp = RsbinScript {
+        name: "foo".to_string(),
+        path: "/bar/foo.rs".to_string(),
+        build_type: RsbinBuildType::Rustc,
+        build_opts: vec![],
+        build_deps: vec![],
+    };
+    assert_eq!(toml::from_str::<RsbinScript>(&s).unwrap(), rs_exp);
 }
