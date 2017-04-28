@@ -57,17 +57,35 @@ impl RsbinConfig {
 }
 
 #[test]
-fn test_script_from_str() {
+fn test_script_from_str_without_optional() {
     let s = r#"
 name = "foo"
 path = "/bar/foo.rs"
 build-type = "rustc"
 "#;
     let rs_exp = RsbinScript {
-        name: "foo".to_string(),
-        path: "/bar/foo.rs".to_string(),
+        name: "foo".to_owned(),
+        path: "/bar/foo.rs".to_owned(),
         build_type: RsbinBuildType::Rustc,
         build_opts: vec![],
+        build_deps: vec![],
+    };
+    assert_eq!(toml::from_str::<RsbinScript>(&s).unwrap(), rs_exp);
+}
+
+#[test]
+fn test_script_from_str_with_build_opts() {
+    let s = r#"
+name = "foo"
+path = "/bar/foo.hs"
+build-type = "ghc"
+build-opts = ["-O2"]
+"#;
+    let rs_exp = RsbinScript {
+        name: "foo".to_owned(),
+        path: "/bar/foo.hs".to_owned(),
+        build_type: RsbinBuildType::Ghc,
+        build_opts: vec!["-O2".to_owned()],
         build_deps: vec![],
     };
     assert_eq!(toml::from_str::<RsbinScript>(&s).unwrap(), rs_exp);
