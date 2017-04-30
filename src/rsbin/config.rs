@@ -90,3 +90,21 @@ build-opts = ["-O2"]
     };
     assert_eq!(toml::from_str::<RsbinScript>(&s).unwrap(), rs_exp);
 }
+
+#[test]
+fn test_script_from_str_with_build_deps() {
+    let s = r#"
+name = "foo"
+path = "/bar/foo.rs"
+build-type = "cargo"
+build-deps = ["serde = \"^1.0.0\"", "toml"]
+"#;
+    let rs_exp = RsbinScript {
+        name: "foo".to_owned(),
+        path: "/bar/foo.rs".to_owned(),
+        build_type: RsbinBuildType::Cargo,
+        build_opts: vec![],
+        build_deps: vec!["serde = \"^1.0.0\"".to_owned(), "toml".to_owned()],
+    };
+    assert_eq!(toml::from_str::<RsbinScript>(&s).unwrap(), rs_exp);
+}
