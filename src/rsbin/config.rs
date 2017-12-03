@@ -1,13 +1,12 @@
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
-use std::result;
+
+use failure::{Error, ResultExt};
 
 use serde::de::Error as SerdeError;
 use serde::de::{Deserialize, Deserializer, IntoDeserializer};
 use toml;
-
-use rsbin::errors::*;
 
 #[derive(Debug, Deserialize, PartialEq)]
 pub enum RsbinBuildType {
@@ -29,7 +28,7 @@ pub struct RsbinScript {
     build_deps: Vec<String>,
 }
 
-fn deserialize_build_type<'de, D>(d: D) -> result::Result<RsbinBuildType, D::Error> where D: Deserializer<'de> {
+fn deserialize_build_type<'de, D>(d: D) -> Result<RsbinBuildType, D::Error> where D: Deserializer<'de> {
     let toml: toml::Value = try!(Deserialize::deserialize(d));
     match toml {
         toml::Value::String(s) => {
@@ -46,13 +45,15 @@ pub struct RsbinConfig {
 }
 
 impl RsbinConfig {
-    pub fn load<P>(path: P) -> Result<RsbinConfig> where P: AsRef<Path> {
-        let mut f = try!(File::open(&path)
-                         .chain_err(|| format!("Unable to open {}", path.as_ref().display())));
+    pub fn load<P>(path: P) -> Result<RsbinConfig, Error> where P: AsRef<Path> {
+        let mut f = File::open(&path)
+            .with_context(|e| format!("Unable to open {}, ERROR: {}",
+                                      path.as_ref().display(), e))?;
         let mut s = String::new();
-        try!(f.read_to_string(&mut s).chain_err(|| "read_to_string"));
+        f.read_to_string(&mut s)?;
 
-        toml::from_str(&s).chain_err(|| "Invalid TOML format")
+        Ok(toml::from_str(&s)
+           .with_context(|e| format!("Invalid TOM format, ERROR: {}", e))?)
     }
 }
 

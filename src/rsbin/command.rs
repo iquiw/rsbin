@@ -1,13 +1,13 @@
 use std::fmt;
 use std::env::Args;
 
+use failure::{Error, err_msg};
+
 use rsbin::os::RsbinEnv;
 use rsbin::config::{RsbinConfig, RsbinScript};
-use rsbin::errors::Result;
 use rsbin::util;
-use rsbin::util::err;
 
-pub fn clean(env: &RsbinEnv, cfg: &RsbinConfig) -> Result<()> {
+pub fn clean(env: &RsbinEnv, cfg: &RsbinConfig) -> Result<(), Error> {
     for scr in &cfg.scripts {
         try!(util::remove_file_if_exists(env.bin_path(scr)));
         try!(util::remove_file_if_exists(env.hash_path(scr)));
@@ -16,7 +16,7 @@ pub fn clean(env: &RsbinEnv, cfg: &RsbinConfig) -> Result<()> {
     Ok(())
 }
 
-pub fn help() -> Result<()> {
+pub fn help() -> Result<(), Error> {
     println!("usage: rsbin COMMAND [ARG..]
 
 commands:
@@ -30,7 +30,7 @@ commands:
 }
 
 
-pub fn list(cfg: &RsbinConfig, args: &mut Args) -> Result<()> {
+pub fn list(cfg: &RsbinConfig, args: &mut Args) -> Result<(), Error> {
     let long = if let Some(ref s) = args.next() {
         s == "-l"
     } else {
@@ -47,7 +47,7 @@ pub fn list(cfg: &RsbinConfig, args: &mut Args) -> Result<()> {
     Ok(())
 }
 
-pub fn run(env: &RsbinEnv, cfg: &RsbinConfig, args: &mut Args) -> Result<()> {
+pub fn run(env: &RsbinEnv, cfg: &RsbinConfig, args: &mut Args) -> Result<(), Error> {
     match args.next() {
         Some(name) => {
             match lookup_script(cfg, &name) {
@@ -56,14 +56,14 @@ pub fn run(env: &RsbinEnv, cfg: &RsbinConfig, args: &mut Args) -> Result<()> {
                     try!(update_script(env, scr, false));
                     scr.execute(env, &scr_args)
                 }
-                None => err("script not found"),
+                None => Err(err_msg("script not found")),
             }
         }
-        None => err("run needs script name"),
+        None => Err(err_msg("run needs script name")),
     }
 }
 
-pub fn update(env: &RsbinEnv, cfg: &RsbinConfig, args: &mut Args) -> Result<()> {
+pub fn update(env: &RsbinEnv, cfg: &RsbinConfig, args: &mut Args) -> Result<(), Error> {
     let mut args = args.peekable();
     let force = if Some("-f") == args.peek().map(|s| s.as_ref()) {
         args.next();
@@ -104,7 +104,7 @@ impl fmt::Display for RsbinUpdateResult {
     }
 }
 
-fn update_script(env: &RsbinEnv, scr: &RsbinScript, force: bool) -> Result<RsbinUpdateResult> {
+fn update_script(env: &RsbinEnv, scr: &RsbinScript, force: bool) -> Result<RsbinUpdateResult, Error> {
     let hash = try!(scr.get_hash());
     if force || !try!(scr.is_hash_same(env, &hash)) || !scr.does_bin_exist(env) {
         try!(scr.compile(env));

@@ -1,9 +1,10 @@
 use std::env;
 use std::path::PathBuf;
 
+use failure::Error;
+
 use rsbin::config::{RsbinConfig, RsbinScript};
 use rsbin::util;
-use rsbin::errors::Result;
 
 pub struct RsbinEnv {
     appdir: PathBuf,
@@ -18,7 +19,7 @@ impl RsbinEnv {
         }
     }
 
-    pub fn init(&self) -> Result<RsbinConfig> {
+    pub fn init(&self) -> Result<RsbinConfig, Error> {
         try!(util::create_dir_if_missing(&self.appdir));
         try!(util::create_dir_if_missing(&self.tmpdir));
         try!(util::create_dir_if_missing(&self.bindir()));
