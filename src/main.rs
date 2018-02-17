@@ -1,5 +1,5 @@
-extern crate failure;
 extern crate crypto;
+extern crate failure;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
@@ -27,15 +27,13 @@ fn dispatch(env: &RsbinEnv, cfg: &RsbinConfig) -> Result<(), Error> {
 
     args.next();
     match args.next() {
-        Some(cmd) => {
-            match cmd.as_ref() {
-                "clean" => command::clean(env, cfg),
-                "list" | "ls" => command::list(cfg, &mut args),
-                "run" => command::run(env, cfg, &mut args),
-                "update" => command::update(env, cfg, &mut args),
-                "help" | _ => command::help(),
-            }
-        }
+        Some(cmd) => match cmd.as_ref() {
+            "clean" => command::clean(env, cfg),
+            "list" | "ls" => command::list(cfg, &mut args),
+            "run" => command::run(env, cfg, &mut args),
+            "update" => command::update(env, cfg, &mut args),
+            "help" | _ => command::help(),
+        },
         _ => command::help(),
     }
 }

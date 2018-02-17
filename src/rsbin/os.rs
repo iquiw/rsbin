@@ -91,7 +91,9 @@ fn appdir() -> PathBuf {
 }
 #[cfg(windows)]
 fn tmpdir() -> PathBuf {
-    let tmp = env::var("TMP").or_else(|_| env::var("TEMP")).expect("TMP is set");
+    let tmp = env::var("TMP")
+        .or_else(|_| env::var("TEMP"))
+        .expect("TMP is set");
     let mut tmpdir = PathBuf::from(tmp);
     tmpdir.push("rsbin");
     tmpdir

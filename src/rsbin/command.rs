@@ -1,7 +1,7 @@
 use std::fmt;
 use std::env::Args;
 
-use failure::{Error, err_msg};
+use failure::{err_msg, Error};
 
 use rsbin::os::RsbinEnv;
 use rsbin::config::{RsbinConfig, RsbinScript};
@@ -17,7 +17,8 @@ pub fn clean(env: &RsbinEnv, cfg: &RsbinConfig) -> Result<(), Error> {
 }
 
 pub fn help() -> Result<(), Error> {
-    println!("usage: rsbin COMMAND [ARG..]
+    println!(
+        "usage: rsbin COMMAND [ARG..]
 
 commands:
   help                        : show this help
@@ -25,10 +26,10 @@ commands:
   list [-l]                   : list available scripts (ls)
   run NAME                    : run script NAME, build it if necessary
   update [-f] [NAME..]        : compile all or specified scripts if necessary
-");
+"
+    );
     Ok(())
 }
-
 
 pub fn list(cfg: &RsbinConfig, args: &mut Args) -> Result<(), Error> {
     let long = if let Some(ref s) = args.next() {
@@ -49,16 +50,14 @@ pub fn list(cfg: &RsbinConfig, args: &mut Args) -> Result<(), Error> {
 
 pub fn run(env: &RsbinEnv, cfg: &RsbinConfig, args: &mut Args) -> Result<(), Error> {
     match args.next() {
-        Some(name) => {
-            match lookup_script(cfg, &name) {
-                Some(scr) => {
-                    let scr_args: Vec<_> = args.collect();
-                    try!(update_script(env, scr, false));
-                    scr.execute(env, &scr_args)
-                }
-                None => Err(err_msg("script not found")),
+        Some(name) => match lookup_script(cfg, &name) {
+            Some(scr) => {
+                let scr_args: Vec<_> = args.collect();
+                try!(update_script(env, scr, false));
+                scr.execute(env, &scr_args)
             }
-        }
+            None => Err(err_msg("script not found")),
+        },
         None => Err(err_msg("run needs script name")),
     }
 }
@@ -104,7 +103,11 @@ impl fmt::Display for RsbinUpdateResult {
     }
 }
 
-fn update_script(env: &RsbinEnv, scr: &RsbinScript, force: bool) -> Result<RsbinUpdateResult, Error> {
+fn update_script(
+    env: &RsbinEnv,
+    scr: &RsbinScript,
+    force: bool,
+) -> Result<RsbinUpdateResult, Error> {
     let hash = try!(scr.get_hash());
     if force || !try!(scr.is_hash_same(env, &hash)) || !scr.does_bin_exist(env) {
         try!(scr.compile(env));

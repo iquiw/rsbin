@@ -13,13 +13,13 @@ use rsbin::config::RsbinScript;
 impl RsbinScript {
     pub fn get_hash(&self) -> Result<String, Error> {
         Ok(hash_file(&self.path)
-           .with_context(|_| format!("Unable to calculate hash of {}", &self.path))?)
+            .with_context(|_| format!("Unable to calculate hash of {}", &self.path))?)
     }
 
     pub fn write_hash(&self, env: &RsbinEnv, hash: &str) -> Result<(), Error> {
         let path = env.hash_path(self);
-        let mut f = File::create(&path)
-            .with_context(|_| format!("Unable to create {}", path.display()))?;
+        let mut f =
+            File::create(&path).with_context(|_| format!("Unable to create {}", path.display()))?;
         f.write_fmt(format_args!("{}", hash))
             .with_context(|_| "Unable to write hash")?;
         Ok(())
@@ -29,7 +29,8 @@ impl RsbinScript {
         let path = env.hash_path(self);
         if let Ok(mut f) = File::open(path) {
             let mut s = String::new();
-            f.read_to_string(&mut s).with_context(|_| "Unable to read hash")?;
+            f.read_to_string(&mut s)
+                .with_context(|_| "Unable to read hash")?;
             Ok(s == hash)
         } else {
             Ok(false)
