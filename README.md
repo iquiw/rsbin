@@ -34,3 +34,12 @@ With the above configuration, run script `foo` as follows. It compiles `foo.rs` 
 $ rsbin run foo
 ```
 
+To list avaiable scripts, run `list`. With `-l` option, list paths also.
+
+``` console
+$ rsbin list
+Available scripts:
+  foo
+  bar
+  baz
+```
