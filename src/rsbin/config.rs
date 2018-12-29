@@ -4,18 +4,22 @@ use std::path::Path;
 
 use failure::{Error, ResultExt};
 
-use serde::Deserialize;
 use serde::de;
 use serde::de::Error as SerdeError;
 use serde::de::{Deserializer, IntoDeserializer};
+use serde::Deserialize;
 use toml;
 
 #[derive(Debug, Deserialize, PartialEq)]
 pub enum RsbinBuildType {
-    #[serde(rename = "rustc")] Rustc,
-    #[serde(rename = "cargo")] Cargo,
-    #[serde(rename = "ghc")] Ghc,
-    #[serde(rename = "stack")] Stack,
+    #[serde(rename = "rustc")]
+    Rustc,
+    #[serde(rename = "cargo")]
+    Cargo,
+    #[serde(rename = "ghc")]
+    Ghc,
+    #[serde(rename = "stack")]
+    Stack,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -24,8 +28,10 @@ pub struct RsbinScript {
     pub path: String,
     #[serde(rename = "build-type", deserialize_with = "deserialize_build_type")]
     pub build_type: RsbinBuildType,
-    #[serde(rename = "build-opts", default)] pub build_opts: Vec<String>,
-    #[serde(rename = "build-deps", default)] build_deps: Vec<String>,
+    #[serde(rename = "build-opts", default)]
+    pub build_opts: Vec<String>,
+    #[serde(rename = "build-deps", default)]
+    build_deps: Vec<String>,
 }
 
 fn deserialize_build_type<'de, D>(d: D) -> Result<RsbinBuildType, D::Error>
@@ -55,8 +61,9 @@ impl RsbinConfig {
     where
         P: AsRef<Path>,
     {
-        let mut f = File::open(&path)
-            .with_context(|e| format!("Unable to open {}, ERROR: {}", path.as_ref().display(), e))?;
+        let mut f = File::open(&path).with_context(|e| {
+            format!("Unable to open {}, ERROR: {}", path.as_ref().display(), e)
+        })?;
         let mut s = String::new();
         f.read_to_string(&mut s)?;
 

@@ -1,10 +1,10 @@
-use std::fmt;
 use std::env::Args;
+use std::fmt;
 
 use failure::{err_msg, Error};
 
-use rsbin::os::RsbinEnv;
 use rsbin::config::{RsbinConfig, RsbinScript};
+use rsbin::os::RsbinEnv;
 use rsbin::util;
 
 pub fn clean(env: &RsbinEnv, cfg: &RsbinConfig) -> Result<(), Error> {

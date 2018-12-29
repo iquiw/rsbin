@@ -4,8 +4,8 @@ use std::process::Command;
 
 use failure::{err_msg, Error, ResultExt};
 
-use rsbin::os::RsbinEnv;
 use rsbin::config::{RsbinBuildType, RsbinScript};
+use rsbin::os::RsbinEnv;
 use rsbin::util::create_dir_if_missing;
 
 impl RsbinScript {
@@ -36,7 +36,8 @@ impl RsbinScript {
 }
 
 fn run_command(path: &Path, cmd: &mut Command) -> Result<(), Error> {
-    let status = cmd.status()
+    let status = cmd
+        .status()
         .with_context(|_| format!("{}: execution failed", path.display()))?;
     if status.success() {
         Ok(())

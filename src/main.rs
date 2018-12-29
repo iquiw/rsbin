@@ -7,9 +7,9 @@ mod rsbin;
 
 use failure::Error;
 
-use rsbin::os::RsbinEnv;
-use rsbin::config::RsbinConfig;
 use rsbin::command;
+use rsbin::config::RsbinConfig;
+use rsbin::os::RsbinEnv;
 
 fn main() {
     let env = RsbinEnv::new();

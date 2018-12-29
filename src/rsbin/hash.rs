@@ -1,5 +1,5 @@
-use std::io::{BufRead, BufReader, Read, Write};
 use std::fs::File;
+use std::io::{BufRead, BufReader, Read, Write};
 use std::path::Path;
 
 use crypto::digest::Digest;
@@ -7,8 +7,8 @@ use crypto::sha1::Sha1;
 
 use failure::{Error, ResultExt};
 
-use rsbin::os::RsbinEnv;
 use rsbin::config::RsbinScript;
+use rsbin::os::RsbinEnv;
 
 impl RsbinScript {
     pub fn get_hash(&self) -> Result<String, Error> {
