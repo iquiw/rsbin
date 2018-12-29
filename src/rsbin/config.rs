@@ -4,8 +4,10 @@ use std::path::Path;
 
 use failure::{Error, ResultExt};
 
+use serde::Deserialize;
+use serde::de;
 use serde::de::Error as SerdeError;
-use serde::de::{Deserialize, Deserializer, IntoDeserializer};
+use serde::de::{Deserializer, IntoDeserializer};
 use toml;
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -30,11 +32,11 @@ fn deserialize_build_type<'de, D>(d: D) -> Result<RsbinBuildType, D::Error>
 where
     D: Deserializer<'de>,
 {
-    let toml: toml::Value = try!(Deserialize::deserialize(d));
+    let toml: toml::Value = try!(de::Deserialize::deserialize(d));
     match toml {
         toml::Value::String(s) => {
             let sd = s.to_lowercase().into_deserializer();
-            Ok(try!(Deserialize::deserialize(sd)))
+            Ok(try!(de::Deserialize::deserialize(sd)))
         }
         _ => Err(D::Error::custom(format!(
             "invalid type: {}",
