@@ -4,9 +4,9 @@ use std::process::Command;
 
 use failure::{err_msg, Error, ResultExt};
 
-use rsbin::config::{RsbinBuildType, RsbinScript};
-use rsbin::os::RsbinEnv;
-use rsbin::util::create_dir_if_missing;
+use super::config::{RsbinBuildType, RsbinScript};
+use super::os::RsbinEnv;
+use super::util::create_dir_if_missing;
 
 impl RsbinScript {
     pub fn execute<S>(&self, env: &RsbinEnv, args: &[S]) -> Result<(), Error>
@@ -62,7 +62,7 @@ fn build_rustc(src: &Path, dst: &Path) -> Result<(), Error> {
 }
 
 fn build_ghc(src: &Path, dst: &Path, tmpdir: &Path, opts: &[String]) -> Result<(), Error> {
-    try!(create_dir_if_missing(tmpdir));
+    create_dir_if_missing(tmpdir)?;
     let path = Path::new("ghc");
     run_command(
         path,

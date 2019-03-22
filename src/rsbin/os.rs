@@ -3,8 +3,8 @@ use std::path::PathBuf;
 
 use failure::Error;
 
-use rsbin::config::{RsbinConfig, RsbinScript};
-use rsbin::util;
+use super::config::{RsbinConfig, RsbinScript};
+use super::util;
 
 pub struct RsbinEnv {
     appdir: PathBuf,
@@ -20,10 +20,10 @@ impl RsbinEnv {
     }
 
     pub fn init(&self) -> Result<RsbinConfig, Error> {
-        try!(util::create_dir_if_missing(&self.appdir));
-        try!(util::create_dir_if_missing(&self.tmpdir));
-        try!(util::create_dir_if_missing(&self.bindir()));
-        try!(util::create_dir_if_missing(&self.hashdir()));
+        util::create_dir_if_missing(&self.appdir)?;
+        util::create_dir_if_missing(&self.tmpdir)?;
+        util::create_dir_if_missing(&self.bindir())?;
+        util::create_dir_if_missing(&self.hashdir())?;
         RsbinConfig::load(self.config_path())
     }
 

@@ -7,8 +7,8 @@ use crypto::sha1::Sha1;
 
 use failure::{Error, ResultExt};
 
-use rsbin::config::RsbinScript;
-use rsbin::os::RsbinEnv;
+use super::config::RsbinScript;
+use super::os::RsbinEnv;
 
 impl RsbinScript {
     pub fn get_hash(&self) -> Result<String, Error> {
@@ -39,12 +39,12 @@ impl RsbinScript {
 }
 
 fn hash_file<P: AsRef<Path>>(path: P) -> Result<String, Error> {
-    let file = try!(File::open(&path));
+    let file = File::open(&path)?;
     let mut reader = BufReader::new(file);
     let mut hasher = Sha1::new();
     loop {
         let len = {
-            let buf = try!(reader.fill_buf());
+            let buf = reader.fill_buf()?;
             hasher.input(buf);
             buf.len()
         };

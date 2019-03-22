@@ -38,11 +38,11 @@ fn deserialize_build_type<'de, D>(d: D) -> Result<RsbinBuildType, D::Error>
 where
     D: Deserializer<'de>,
 {
-    let toml: toml::Value = try!(de::Deserialize::deserialize(d));
+    let toml: toml::Value = de::Deserialize::deserialize(d)?;
     match toml {
         toml::Value::String(s) => {
             let sd = s.to_lowercase().into_deserializer();
-            Ok(try!(de::Deserialize::deserialize(sd)))
+            Ok(de::Deserialize::deserialize(sd)?)
         }
         _ => Err(D::Error::custom(format!(
             "invalid type: {}",

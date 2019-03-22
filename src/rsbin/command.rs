@@ -3,15 +3,15 @@ use std::fmt;
 
 use failure::{err_msg, Error};
 
-use rsbin::config::{RsbinConfig, RsbinScript};
-use rsbin::os::RsbinEnv;
-use rsbin::util;
+use super::config::{RsbinConfig, RsbinScript};
+use super::os::RsbinEnv;
+use super::util;
 
 pub fn clean(env: &RsbinEnv, cfg: &RsbinConfig) -> Result<(), Error> {
     for scr in &cfg.scripts {
-        try!(util::remove_file_if_exists(env.bin_path(scr)));
-        try!(util::remove_file_if_exists(env.hash_path(scr)));
-        try!(util::remove_dir_if_exists(env.tmp_path(scr)));
+        util::remove_file_if_exists(env.bin_path(scr))?;
+        util::remove_file_if_exists(env.hash_path(scr))?;
+        util::remove_dir_if_exists(env.tmp_path(scr))?;
     }
     Ok(())
 }
@@ -53,7 +53,7 @@ pub fn run(env: &RsbinEnv, cfg: &RsbinConfig, args: &mut Args) -> Result<(), Err
         Some(name) => match lookup_script(cfg, &name) {
             Some(scr) => {
                 let scr_args: Vec<_> = args.collect();
-                try!(update_script(env, scr, false));
+                update_script(env, scr, false)?;
                 scr.execute(env, &scr_args)
             }
             None => Err(err_msg("script not found")),
@@ -72,13 +72,13 @@ pub fn update(env: &RsbinEnv, cfg: &RsbinConfig, args: &mut Args) -> Result<(), 
     };
     if args.peek().is_none() {
         for scr in &cfg.scripts {
-            let res = try!(update_script(env, scr, force));
+            let res = update_script(env, scr, force)?;
             println!("{:12} {}", res, scr.name);
         }
     } else {
         for name in args {
             let res = match lookup_script(cfg, &name) {
-                Some(scr) => try!(update_script(env, scr, force)),
+                Some(scr) => update_script(env, scr, force)?,
                 None => RsbinUpdateResult::NotFound,
             };
             println!("{:12} {}", res, name);
@@ -108,10 +108,10 @@ fn update_script(
     scr: &RsbinScript,
     force: bool,
 ) -> Result<RsbinUpdateResult, Error> {
-    let hash = try!(scr.get_hash());
-    if force || !try!(scr.is_hash_same(env, &hash)) || !scr.does_bin_exist(env) {
-        try!(scr.compile(env));
-        try!(scr.write_hash(env, &hash));
+    let hash = scr.get_hash()?;
+    if force || !scr.is_hash_same(env, &hash)? || !scr.does_bin_exist(env) {
+        scr.compile(env)?;
+        scr.write_hash(env, &hash)?;
         Ok(RsbinUpdateResult::Compiled)
     } else {
         Ok(RsbinUpdateResult::Latest)
