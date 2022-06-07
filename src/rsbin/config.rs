@@ -68,10 +68,10 @@ impl RsbinConfig {
         let mut s = String::new();
         f.read_to_string(&mut s)?;
 
-        Ok(toml::from_str(&s).map_err(|e| {
+        toml::from_str(&s).map_err(|e| {
             let ctx = format!("Invalid TOM format, ERROR: {}", e);
             Error::new(e).context(ctx)
-        })?)
+        })
     }
 }
 

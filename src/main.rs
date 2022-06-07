@@ -25,7 +25,7 @@ fn dispatch(env: &RsbinEnv, cfg: &RsbinConfig) -> Result<()> {
             "list" | "ls" => command::list(cfg, &mut args),
             "run" => command::run(env, cfg, &mut args),
             "update" => command::update(env, cfg, &mut args),
-            "help" | _ => command::help(),
+            _ => command::help(),
         },
         _ => command::help(),
     }

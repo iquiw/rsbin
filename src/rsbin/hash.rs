@@ -11,8 +11,7 @@ use super::os::RsbinEnv;
 
 impl RsbinScript {
     pub fn get_hash(&self) -> Result<String> {
-        Ok(hash_file(&self.path)
-            .with_context(|| format!("Unable to calculate hash of {}", &self.path))?)
+        hash_file(&self.path).with_context(|| format!("Unable to calculate hash of {}", &self.path))
     }
 
     pub fn write_hash(&self, env: &RsbinEnv, hash: &str) -> Result<()> {
