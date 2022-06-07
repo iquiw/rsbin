@@ -5,7 +5,7 @@ version = "0.5.0"
 edition = "2018"
 
 [dependencies]
-failure = "^0.1.2"
-rust-crypto = "^0.2.36"
+anyhow = "1.0.57"
 serde = { version = "^1.0.82", features = ["derive"] }
+sha1 = "0.10.1"
 toml = "^0.5.0"

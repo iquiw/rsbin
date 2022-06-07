@@ -1,13 +1,13 @@
 use std::env::Args;
 use std::fmt;
 
-use failure::{err_msg, Error};
+use anyhow::{anyhow, Result};
 
 use super::config::{RsbinConfig, RsbinScript};
 use super::os::RsbinEnv;
 use super::util;
 
-pub fn clean(env: &RsbinEnv, cfg: &RsbinConfig) -> Result<(), Error> {
+pub fn clean(env: &RsbinEnv, cfg: &RsbinConfig) -> Result<()> {
     for scr in &cfg.scripts {
         util::remove_file_if_exists(env.bin_path(scr))?;
         util::remove_file_if_exists(env.hash_path(scr))?;
@@ -16,7 +16,7 @@ pub fn clean(env: &RsbinEnv, cfg: &RsbinConfig) -> Result<(), Error> {
     Ok(())
 }
 
-pub fn help() -> Result<(), Error> {
+pub fn help() -> Result<()> {
     println!(
         "usage: rsbin COMMAND [ARG..]
 
@@ -31,7 +31,7 @@ commands:
     Ok(())
 }
 
-pub fn list(cfg: &RsbinConfig, args: &mut Args) -> Result<(), Error> {
+pub fn list(cfg: &RsbinConfig, args: &mut Args) -> Result<()> {
     let long = if let Some(ref s) = args.next() {
         s == "-l"
     } else {
@@ -48,7 +48,7 @@ pub fn list(cfg: &RsbinConfig, args: &mut Args) -> Result<(), Error> {
     Ok(())
 }
 
-pub fn run(env: &RsbinEnv, cfg: &RsbinConfig, args: &mut Args) -> Result<(), Error> {
+pub fn run(env: &RsbinEnv, cfg: &RsbinConfig, args: &mut Args) -> Result<()> {
     match args.next() {
         Some(name) => match lookup_script(cfg, &name) {
             Some(scr) => {
@@ -56,13 +56,13 @@ pub fn run(env: &RsbinEnv, cfg: &RsbinConfig, args: &mut Args) -> Result<(), Err
                 update_script(env, scr, false)?;
                 scr.execute(env, &scr_args)
             }
-            None => Err(err_msg("script not found")),
+            None => Err(anyhow!("script not found")),
         },
-        None => Err(err_msg("run needs script name")),
+        None => Err(anyhow!("run needs script name")),
     }
 }
 
-pub fn update(env: &RsbinEnv, cfg: &RsbinConfig, args: &mut Args) -> Result<(), Error> {
+pub fn update(env: &RsbinEnv, cfg: &RsbinConfig, args: &mut Args) -> Result<()> {
     let mut args = args.peekable();
     let force = if Some("-f") == args.peek().map(|s| s.as_ref()) {
         args.next();
@@ -107,7 +107,7 @@ fn update_script(
     env: &RsbinEnv,
     scr: &RsbinScript,
     force: bool,
-) -> Result<RsbinUpdateResult, Error> {
+) -> Result<RsbinUpdateResult> {
     let hash = scr.get_hash()?;
     if force || !scr.is_hash_same(env, &hash)? || !scr.does_bin_exist(env) {
         scr.compile(env)?;

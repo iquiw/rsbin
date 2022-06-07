@@ -2,35 +2,34 @@ use std::fs::File;
 use std::io::{BufRead, BufReader, Read, Write};
 use std::path::Path;
 
-use crypto::digest::Digest;
-use crypto::sha1::Sha1;
+use sha1::{Digest, Sha1};
 
-use failure::{Error, ResultExt};
+use anyhow::{Context, Result};
 
 use super::config::RsbinScript;
 use super::os::RsbinEnv;
 
 impl RsbinScript {
-    pub fn get_hash(&self) -> Result<String, Error> {
+    pub fn get_hash(&self) -> Result<String> {
         Ok(hash_file(&self.path)
-            .with_context(|_| format!("Unable to calculate hash of {}", &self.path))?)
+            .with_context(|| format!("Unable to calculate hash of {}", &self.path))?)
     }
 
-    pub fn write_hash(&self, env: &RsbinEnv, hash: &str) -> Result<(), Error> {
+    pub fn write_hash(&self, env: &RsbinEnv, hash: &str) -> Result<()> {
         let path = env.hash_path(self);
         let mut f =
-            File::create(&path).with_context(|_| format!("Unable to create {}", path.display()))?;
+            File::create(&path).with_context(|| format!("Unable to create {}", path.display()))?;
         f.write_fmt(format_args!("{}", hash))
-            .with_context(|_| "Unable to write hash")?;
+            .with_context(|| "Unable to write hash")?;
         Ok(())
     }
 
-    pub fn is_hash_same(&self, env: &RsbinEnv, hash: &str) -> Result<bool, Error> {
+    pub fn is_hash_same(&self, env: &RsbinEnv, hash: &str) -> Result<bool> {
         let path = env.hash_path(self);
         if let Ok(mut f) = File::open(path) {
             let mut s = String::new();
             f.read_to_string(&mut s)
-                .with_context(|_| "Unable to read hash")?;
+                .with_context(|| "Unable to read hash")?;
             Ok(s == hash)
         } else {
             Ok(false)
@@ -38,14 +37,14 @@ impl RsbinScript {
     }
 }
 
-fn hash_file<P: AsRef<Path>>(path: P) -> Result<String, Error> {
+fn hash_file<P: AsRef<Path>>(path: P) -> Result<String> {
     let file = File::open(&path)?;
     let mut reader = BufReader::new(file);
     let mut hasher = Sha1::new();
     loop {
         let len = {
             let buf = reader.fill_buf()?;
-            hasher.input(buf);
+            hasher.update(buf);
             buf.len()
         };
         if len == 0 {
@@ -53,5 +52,5 @@ fn hash_file<P: AsRef<Path>>(path: P) -> Result<String, Error> {
         }
         reader.consume(len);
     }
-    Ok(hasher.result_str())
+    Ok(format!("{:x}", hasher.finalize()))
 }

@@ -1,7 +1,7 @@
 use std::env;
 use std::path::PathBuf;
 
-use failure::Error;
+use anyhow::Result;
 
 use super::config::{RsbinConfig, RsbinScript};
 use super::util;
@@ -19,7 +19,7 @@ impl RsbinEnv {
         }
     }
 
-    pub fn init(&self) -> Result<RsbinConfig, Error> {
+    pub fn init(&self) -> Result<RsbinConfig> {
         util::create_dir_if_missing(&self.appdir)?;
         util::create_dir_if_missing(&self.tmpdir)?;
         util::create_dir_if_missing(&self.bindir())?;

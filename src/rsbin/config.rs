@@ -2,7 +2,7 @@ use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 
-use failure::{Error, ResultExt};
+use anyhow::{Error, Result};
 
 use serde::de;
 use serde::de::Error as SerdeError;
@@ -57,17 +57,21 @@ pub struct RsbinConfig {
 }
 
 impl RsbinConfig {
-    pub fn load<P>(path: P) -> Result<RsbinConfig, Error>
+    pub fn load<P>(path: P) -> Result<RsbinConfig>
     where
         P: AsRef<Path>,
     {
-        let mut f = File::open(&path).with_context(|e| {
-            format!("Unable to open {}, ERROR: {}", path.as_ref().display(), e)
+        let mut f = File::open(&path).map_err(|e| {
+            let ctx = format!("Unable to open {}, ERROR: {}", path.as_ref().display(), e);
+            Error::new(e).context(ctx)
         })?;
         let mut s = String::new();
         f.read_to_string(&mut s)?;
 
-        Ok(toml::from_str(&s).with_context(|e| format!("Invalid TOM format, ERROR: {}", e))?)
+        Ok(toml::from_str(&s).map_err(|e| {
+            let ctx = format!("Invalid TOM format, ERROR: {}", e);
+            Error::new(e).context(ctx)
+        })?)
     }
 }
 

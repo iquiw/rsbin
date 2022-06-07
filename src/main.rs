@@ -1,11 +1,6 @@
-extern crate crypto;
-extern crate failure;
-extern crate serde;
-extern crate toml;
-
 mod rsbin;
 
-use failure::Error;
+use anyhow::Result;
 
 use rsbin::command;
 use rsbin::config::RsbinConfig;
@@ -20,7 +15,7 @@ fn main() {
     }
 }
 
-fn dispatch(env: &RsbinEnv, cfg: &RsbinConfig) -> Result<(), Error> {
+fn dispatch(env: &RsbinEnv, cfg: &RsbinConfig) -> Result<()> {
     let mut args = std::env::args();
 
     args.next();
