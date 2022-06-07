@@ -2,7 +2,7 @@
 authors = ["Iku Iwasa <iku.iwasa@gmail.com>"]
 name = "rsbin"
 version = "0.5.0"
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 anyhow = "1.0.57"
