@@ -10,7 +10,7 @@ use serde::de::{Deserializer, IntoDeserializer};
 use serde::Deserialize;
 use toml;
 
-#[derive(Debug, Deserialize, PartialEq)]
+#[derive(Debug, Deserialize, PartialEq, Eq)]
 pub enum RsbinBuildType {
     #[serde(rename = "rustc")]
     Rustc,
@@ -22,7 +22,7 @@ pub enum RsbinBuildType {
     Stack,
 }
 
-#[derive(Debug, Deserialize, PartialEq)]
+#[derive(Debug, Deserialize, PartialEq, Eq)]
 pub struct RsbinScript {
     pub name: String,
     pub path: String,

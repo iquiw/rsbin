@@ -74,7 +74,7 @@ fn appdir() -> PathBuf {
 }
 #[cfg(unix)]
 fn tmpdir() -> PathBuf {
-    let tmp = env::var("TMP").unwrap_or("/tmp".to_string());
+    let tmp = env::var("TMP").unwrap_or_else(|_| "/tmp".to_string());
     let mut tmpdir = PathBuf::from(tmp);
     tmpdir.push("rsbin");
     tmpdir
