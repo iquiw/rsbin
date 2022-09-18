@@ -36,7 +36,7 @@ impl RsbinEnv {
     pub fn bin_path(&self, scr: &RsbinScript) -> PathBuf {
         let mut binpath = self.bindir();
         binpath.push(&scr.name);
-        exe(&mut binpath);
+        binpath.set_extension(std::env::consts::EXE_EXTENSION);
         binpath
     }
 
@@ -79,9 +79,6 @@ fn tmpdir() -> PathBuf {
     tmpdir.push("rsbin");
     tmpdir
 }
-#[cfg(unix)]
-#[allow(unused_variables)]
-fn exe(path: &mut PathBuf) {}
 #[cfg(windows)]
 fn appdir() -> PathBuf {
     let appdata = env::var("APPDATA").expect("APPDATA is set");
@@ -97,8 +94,4 @@ fn tmpdir() -> PathBuf {
     let mut tmpdir = PathBuf::from(tmp);
     tmpdir.push("rsbin");
     tmpdir
-}
-#[cfg(windows)]
-fn exe(path: &mut PathBuf) {
-    let _ = path.set_extension("exe");
 }
